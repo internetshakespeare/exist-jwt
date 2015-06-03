@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://expath.org/ns/pkg" spec="1.0"
+    name="http://max.terpstra.ca/ns/exist-jwt"
+    abbrev="jwt"
+    version="0.1"
+>
+    <title>JWT parser/verifier</title>
+</package>

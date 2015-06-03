@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://exist-db.org/ns/expath-pkg">
+    <jar>jose4j-0.4.1.jar</jar>
+    <jar>exist-jwt.jar</jar>
+    <java>
+        <namespace>http://max.terpstra.ca/ns/exist-jwt</namespace>
+        <class>ca.terpstra.max.exist_jwt.JwtModule</class>
+    </java>
+</package>

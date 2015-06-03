@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta xmlns="http://exist-db.org/xquery/repo">
+    <description>JWT parser/verifier</description>
+    <author>Maxwell Terpstra</author>
+    <website>https://github.com/telic/exist-jwt</website>
+    <status>alpha</status>
+    <license>MIT</license>
+    <copyright>true</copyright>
+    <type>library</type>
+</meta>
