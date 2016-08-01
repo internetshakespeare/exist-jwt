@@ -1,63 +1,67 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="jwt" default="xar">
+<project name="exist-jwt" default="xar">
     <property name="dist.dir" value="dist"/>
-    <property name="dist.target" value="exist-jwt"/>
-    <property name="package.dir" value="package"/>
     <property name="build.dir" value="build"/>
     <property name="src.dir" value="src"/>
+    <property name="java.src.dir" value="${src.dir}/main/java"/>
+    <property name="package.src.dir" value="${src.dir}/main/expath-pkg"/>
     <property name="lib.dir" value="lib"/>
 
     <property name="exist.version" value="2.2"/>
+    <property name="exist.href" value="https://github.com/eXist-db/mvn-repo/blob/master/org/exist-db/existdb-core/${exist.version}/existdb-core-${exist.version}.jar?raw=true"/>
+    <property name="xmldb.href" value="http://xmldb.exist-db.org/resources/xmldb.jar"/>
     <property name="jose4j.version" value="0.4.2"/>
+    <property name="jose4j.href" value="https://bitbucket.org/b_c/jose4j/downloads/jose4j-${jose4j.version}.jar"/>
 
     <path id="classpath">
         <fileset dir="${lib.dir}">
             <include name="*.jar"/>
         </fileset>
     </path>
-
+    
     <!-- dependencies -->
-    <available property="exist.lib" file="${lib.dir}/existdb-core-${exist.version}.jar"/>
-    <available property="jose4j.lib" file="${lib.dir}/jose4j-${jose4j.version}.jar"/>
-    <available property="xmldb.lib" file="${lib.dir}/xmldb.jar"/>
-
-    <target name="get-jose4j" unless="jose4j.lib">
-        <get src="https://bitbucket.org/b_c/jose4j/downloads/jose4j-${jose4j.version}.jar" dest="${lib.dir}/"/>
+    <condition property="haveLibs">
+        <and>
+            <available file="${lib.dir}/exist-core.jar"/>
+            <available file="${lib.dir}/jose4j.jar"/>
+            <available file="${lib.dir}/xmldb.jar"/>
+        </and>
+    </condition>
+    <target name="dependencies" unless="${haveLibs}">
+        <mkdir dir="${lib.dir}"/>
+        <get src="${xmldb.href}" dest="${lib.dir}/xmldb.jar"/>
+        <get src="${exist.href}" dest="${lib.dir}/exist-core.jar"/>
+        <get src="${jose4j.href}" dest="${lib.dir}/jose4j.jar"/>
     </target>
-    <target name="get-xmldb" unless="xmldb.lib">
-        <get src="http://xmldb.exist-db.org/resources/xmldb.jar" dest="${lib.dir}/"/>
-    </target>
-    <target name="get-exist" unless="exist.lib">
-            <get src="https://github.com/eXist-db/mvn-repo/blob/master/org/exist-db/existdb-core/${exist.version}/existdb-core-${exist.version}.jar?raw=true" dest="${lib.dir}"/>
-    </target>        
-
-    <target name="get-libs" depends="get-jose4j, get-exist, get-xmldb"/>
 
 
     <!-- build -->
-    <target name="compile" depends="get-libs">
+    <target name="compile" depends="dependencies">
         <mkdir dir="${build.dir}"/>
         <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="classpath"/>
     </target>
 
     <target name="jar" depends="compile">
-        <jar basedir="${build.dir}" destfile="${lib.dir}/exist-jwt.jar"/>
+        <jar basedir="${build.dir}" destfile="${build.dir}/${ant.project.name}.jar" excludes="${ant.project.name}.jar"/>
     </target>
 
     <target name="xar" depends="jar">
-        <mkdir dir="${package.dir}/content"/>
-        <copy file="${lib.dir}/exist-jwt.jar" todir="${package.dir}/content"/>
-        <copy file="${lib.dir}/jose4j-${jose4j.version}.jar" todir="${package.dir}/content"/>
-        <zip basedir="${package.dir}" destfile="${dist.dir}/${dist.target}.xar"/>
+        <mkdir dir="${dist.dir}"/>
+        <zip destfile="${dist.dir}/${ant.project.name}.xar">
+            <zipfileset dir="${package.src.dir}"/>
+            <zipfileset dir="${build.dir}" includes="${ant.project.name}.jar" prefix="content"/>
+            <zipfileset dir="${lib.dir}" includes="jose4j.jar" prefix="content"/>
+        </zip>
     </target>
     <target name="dist" depends="xar"/>
     <target name="dist-xar" depends="xar"/>
     <target name="all" depends="xar"/>
 
-
+    <!-- clean -->
     <target name="clean">
         <delete dir="${build.dir}"/>
         <delete dir="${dist.dir}"/>
-        <delete dir="${package.dir}/content"/>
-        <delete file="${lib.dir}/exist-jwt.jar"/>
+    </target>
+    <target name="clean-deps">
+        <delete dir="${lib.dir}"/>
     </target>
 </project>

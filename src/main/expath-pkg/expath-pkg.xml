@@ -2,7 +2,8 @@
 <package xmlns="http://expath.org/ns/pkg" spec="1.0"
     name="http://max.terpstra.ca/ns/exist-jwt"
     abbrev="jwt"
-    version="0.1"
+    version="0.1.1"
 >
     <title>JWT parser/verifier</title>
+    <dependency processor="eXist-db"/>
 </package>
